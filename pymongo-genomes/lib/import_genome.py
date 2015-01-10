@@ -19,7 +19,7 @@ def import_genome(file_path, owner, file_format='vcf', mongo_uri=''):
     file_lines = count_line(file_path)
     log.info('#lines: {}'.format(file_lines))
 
-    with pymongo.Connection(host=mongo_uri) as con:
+    with pymongo.MongoClient(host=mongo_uri) as con:
         db = con['pymongo-genomes']
 
         # Use UUID

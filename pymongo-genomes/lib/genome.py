@@ -1,95 +1,27 @@
-import sys, os
+import sys
+import os
 from pprint import pformat
 from collections import defaultdict
-from pymongo import MongoClient
-from django.conf import settings
-from lib.mysql.bioq import Bioq
-from lib.api.gwascatalog import GWASCatalog
-gwascatalog = GWASCatalog()
-from lib.utils import clogging
-log = clogging.getColorLogger(__name__)
+
+import pymongo
+
+from logger import getLogger
+log = getLogger(__name__)
 
 
-class Genomes(object):
-    """
+class Genome(object):
+    def __init__(self, file_name, owner, mongo_uri=''):
+        self.con = pymongo.MongoClient(host=mongo_uri)
+        self.db = self.con['pymongo-genomes']
+        self.genome_info = self.db['genome_info']
 
-    Changelog
+        found = self.genome_info.find_one({'owner': owner, 'file_name': file_name})
+        if found:
+            self.genome = self.db['genomes'][found['file_uuid']]
 
-    - Use UUID for filenames.
-
-      - `get_variants` returns Mongo Collection for `user_id` and `file_name`
-      - `get_file_uuid` returns `file_uuid` (UUID string)
-    """
-
-
-
-    def __init__(self):
-        self.db_select = settings.DB_SELECT['genomes']
-        self.bq = Bioq(settings.DATABASES['bioq']['HOST'],
-                       settings.DATABASES['bioq']['USER'],
-                       settings.DATABASES['bioq']['PASSWORD'],
-                       settings.DATABASES['bioq']['NAME'])
-
-    def get_file_uuid(self, user_id, file_name):
-        with MongoClient(host=settings.MONGO_URI) as c:
-            db = c['pergenie']
-            data_info = db['data_info']
-            found = data_info.find_one({'user_id': user_id, 'name': file_name})
-            log.debug(found)
-            file_uuid = found['file_uuid']
-            return file_uuid
-
-    def get_variants(self, user_id, file_name):
-        with MongoClient(host=settings.MONGO_URI) as c:
-            db = c['pergenie']
-            file_uuid = self.get_file_uuid(user_id, file_name)
-            variants = db['variants'][file_uuid]
-            return variants
-
-    def get_all_variants(self, user_id):
-        with MongoClient(host=settings.MONGO_URI) as c:
-            db = c['pergenie']
-            all_variants = []
-            user_files = self.get_data_infos(user_id)
-            for x in user_files:
-                if 'file_uuid' in x:
-                    all_variants.append(db['variants'][x['file_uuid']])
-                else:
-                    log.warn('no file_uuid')
-                    log.warn(x)
-
-            return all_variants
-
-    def get_freq(self, user_id, locs, loctype='rs', rec=None):
-        # Build query
-        if type(locs) in (str, unicode, int):  # FIXME
-            locs = [locs]
-        locs = [int(str(loc).replace('rs', '')) for loc in locs]
-
-        # Init frequency counter
-        genotype_freq, allele_freq = dict(), dict()
-        for loc in locs:
-            rs = 'rs' + str(loc)
-            genotype_freq[rs], allele_freq[rs] = defaultdict(int), defaultdict(int)
-
-        # Count frequency
-        for data in self.get_data_infos(user_id):
-            genotype = self.get_genotypes(user_id, data['name'], data['file_format'], locs, rec=rec)
-
-            for loc in locs:
-                rs = 'rs' + str(loc)
-                genotype_freq[rs][genotype[loc]] += 1
-
-                if not genotype[loc] == 'na':
-                    allele_freq[rs][genotype[loc][0]] += 1
-                    allele_freq[rs][genotype[loc][1]] += 1
-
-        # default dict to dict
-        for loc in locs:
-            rs = 'rs' + str(loc)
-            genotype_freq[rs], allele_freq[rs] = dict(genotype_freq[rs]), dict(allele_freq[rs])
-
-        return (genotype_freq, allele_freq)
+    def get_genotype_by_rsid(self, rsid):
+        found = self.genome.find_one({'rs': rsid})
+        return found['genotype'] if found else ''
 
     def get_genotypes(self, user_id, file_name, file_format, locs, loctype='rs', rec=None, check_ref_or_not=True):
         """
@@ -133,20 +65,18 @@ class Genomes(object):
     def get_data_infos(self, user_id):
         if user_id.startswith(settings.DEMO_USER_ID): user_id = settings.DEMO_USER_ID
 
-        if self.db_select == 'mongodb':
-            with MongoClient(host=settings.MONGO_URI) as c:
-                data_info = c['pergenie']['data_info']
-                infos = list(data_info.find({'user_id': user_id}))
+        with MongoClient(host=settings.MONGO_URI) as c:
+            data_info = c['pergenie']['data_info']
+            infos = list(data_info.find({'user_id': user_id}))
 
         return infos
 
     def get_data_info(self, user_id, file_name):
         if user_id.startswith(settings.DEMO_USER_ID): user_id = settings.DEMO_USER_ID
 
-        if self.db_select == 'mongodb':
-            with MongoClient(host=settings.MONGO_URI) as c:
-                data_info = c['pergenie']['data_info']
-                info = data_info.find_one({'user_id': user_id, 'name': file_name})
+        with MongoClient(host=settings.MONGO_URI) as c:
+            data_info = c['pergenie']['data_info']
+            info = data_info.find_one({'user_id': user_id, 'name': file_name})
 
         return info
 
