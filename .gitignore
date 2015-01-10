@@ -1,0 +1,22 @@
+# OSX
+.DS_Store
+
+# Emacs
+*~
+\#*
+.\#*
+
+# Python
+*.py[cod]
+
+# Tests
+.coverage
+.tox
+nosetests.xml
+
+# Setuptools
+dist
+*.egg-info
+
+#
+*.orig
