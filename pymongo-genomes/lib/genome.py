@@ -6,14 +6,17 @@ log = getLogger(__name__)
 
 class Genome(object):
     def __init__(self, file_name, owner, mongo_uri=''):
+        self.file_name = file_name
+        self.owner = owner
+
         self.con = pymongo.MongoClient(host=mongo_uri)
         self.db = self.con.get_default_database()
 
-        self.genome_info = self.db['genome_info']
-        found = self.genome_info.find_one({'owner': owner, 'file_name': file_name})
+        found = self.db['genome_info'].find_one({'owner': owner, 'file_name': file_name})
         if found:
             self.genome = self.db['genomes'][found['file_uuid']]
-            self.file_format = self.genome_info['file_format']
+            self.file_format = found['file_format']
+            self.count = self.genome.count()
 
     def get_genotype_by_rsid(self, rsid):
         """Get genotypes by rsids.

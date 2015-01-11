@@ -14,6 +14,9 @@ def main():
     import_genome('test/test.vcf41.vcf', 'you', mongo_uri=MONGO_URI)
 
     g = Genome('test.vcf41.vcf', 'you', mongo_uri=MONGO_URI)
+    print g.owner
+    print g.count
+    print g.file_format
     print g.get_genotype_by_rsid(6054257)
     print g.get_genotype_by_rsid([60, 6054257])
     print g.get_genotype_by_rsid([60])
