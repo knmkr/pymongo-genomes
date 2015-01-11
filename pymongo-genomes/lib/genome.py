@@ -1,8 +1,3 @@
-import sys
-import os
-from pprint import pformat
-from collections import defaultdict
-
 import pymongo
 
 from logger import getLogger
