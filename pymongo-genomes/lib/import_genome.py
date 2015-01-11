@@ -20,7 +20,7 @@ def import_genome(file_path, owner, file_format='vcf', mongo_uri=''):
     log.info('#lines: {}'.format(file_lines))
 
     with pymongo.MongoClient(host=mongo_uri) as con:
-        db = con['pymongo-genomes']
+        db = con.get_default_database()
 
         # Use UUID
         file_uuid = uuid().hex

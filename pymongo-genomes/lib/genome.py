@@ -12,7 +12,7 @@ log = getLogger(__name__)
 class Genome(object):
     def __init__(self, file_name, owner, mongo_uri=''):
         self.con = pymongo.MongoClient(host=mongo_uri)
-        self.db = self.con['pymongo-genomes']
+        self.db = self.con.get_default_database()
         self.genome_info = self.db['genome_info']
 
         found = self.genome_info.find_one({'owner': owner, 'file_name': file_name})
