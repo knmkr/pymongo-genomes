@@ -46,6 +46,9 @@ class Genome(object):
 
         return genotypes
 
+    def get_genotype_by_chr_pos(self, chrpos):
+        pass
+
     def is_blnak_record_sequenced(self, rs, file_format):
         pass
         # """Determine if genotype is `reference` or `N/A`.
