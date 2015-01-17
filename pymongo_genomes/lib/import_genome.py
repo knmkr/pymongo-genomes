@@ -39,7 +39,7 @@ def import_genome(file_path, owner, file_format='vcf', mongo_uri=''):
                 'file_uuid': file_uuid,
                 'file_format': file_format,
                 'date': datetime.datetime.today(),
-                'status': float(1.0)}
+                'status': 1.0}
 
         genome_info.update({'owner': owner, 'file_name': file_name},
                            {"$set": info}, upsert=True)
