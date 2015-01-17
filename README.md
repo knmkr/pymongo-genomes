@@ -13,7 +13,7 @@ Python library for handlig personal genome data in MongoDB.
 Dependencies
 
 - MongoDB
-- pymongo
+- pymongo (2.6>=)
 
 Getting Started
 
