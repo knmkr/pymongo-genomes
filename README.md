@@ -4,11 +4,11 @@ Python library for handlig personal genome data in MongoDB.
 
 - Import personal genome data into MongoDB
   - VCF
-    - gVCF
-      - 23andme raw text
-      - Querying
-        - get genotypes by rs ID
-          - get genotypes by chromosome & position
+  - gVCF
+  - 23andme raw text
+- Querying
+  - get genotypes by rs ID
+  - get genotypes by chromosome & position
 
 Dependencies
 
@@ -22,10 +22,10 @@ Getting Started
     $ python ./pymongo-genomes import your.vcf --owner you
 
     $ python ./pymongo-genomes get your.vcf --owner you --rs 100
-        GG
+    GG
 
     $ python ./pymongo-genomes get your.vcf --owner you --chr 1 --pos 100
-        GG
+    GG
 
 - In Python
 
