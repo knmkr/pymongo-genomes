@@ -20,8 +20,8 @@ Getting Started
 - In Python
 
 ```python
-from pymogo_genomes import import_genome
-from pymogo_genomes import Genome
+from pymongo_genomes import import_genome
+from pymongo_genomes import Genome
 
 import_genome('path/to/your.vcf', owner='you', file_format='vcf', mongo_uri=MONGO_URI)
 
