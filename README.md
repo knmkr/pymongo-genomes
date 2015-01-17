@@ -17,18 +17,6 @@ Dependencies
 
 Getting Started
 
-- Commandline
-
-```bash
-$ pymongo-genomes import your.vcf --owner you
-
-$ pymongo-genomes get your.vcf --owner you --rs 100
-GG
-
-$ pymongo-genomes get your.vcf --owner you --chr 1 --pos 100
-GG
-```
-
 - In Python
 
 ```python
@@ -53,4 +41,16 @@ print g.get_genotype_by_rsid(100)
 
 print g.get_genotype_by_chr_pos('1', 100)
 # 'GG'
+```
+
+- Commandline
+
+```bash
+$ python ./pymongo-genomes import your.vcf --owner you
+
+$ python ./pymongo-genomes get your.vcf --owner you --rs 100
+GG
+
+$ python ./pymongo-genomes get your.vcf --owner you --chr 1 --pos 100
+GG
 ```
