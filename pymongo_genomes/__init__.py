@@ -4,6 +4,7 @@ import os
 import argparse
 from lib.import_genome import import_genome
 from lib.genome import Genome
+from lib.genome_info import GenomeInfo
 
 try:
     from conf import MONGO_URI
@@ -20,6 +21,9 @@ def main():
     print g.get_genotype_by_rsid(6054257)
     print g.get_genotype_by_rsid([60, 6054257])
     print g.get_genotype_by_rsid([60])
+
+    genome_info = GenomeInfo(mongo_uri=MONGO_URI)
+    print genome_info.get_infos_by_owner('you')
 
 if __name__ == '__main__':
     main()

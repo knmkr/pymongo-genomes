@@ -10,5 +10,5 @@ class GenomeInfo(object):
         self.db = self.con.get_default_database()
         self.genome_info = self.db['genome_info']
 
-    def get_genome_infos(self, owner):
+    def get_infos_by_owner(self, owner):
         return list(self.genome_info.find({'owner': owner}))
