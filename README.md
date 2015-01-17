@@ -19,13 +19,15 @@ Getting Started
 
 - Commandline
 
-    $ python ./pymongo-genomes import your.vcf --owner you
+```bash
+$ pymongo-genomes import your.vcf --owner you
 
-    $ python ./pymongo-genomes get your.vcf --owner you --rs 100
-    GG
+$ pymongo-genomes get your.vcf --owner you --rs 100
+GG
 
-    $ python ./pymongo-genomes get your.vcf --owner you --chr 1 --pos 100
-    GG
+$ pymongo-genomes get your.vcf --owner you --chr 1 --pos 100
+GG
+```
 
 - In Python
 
