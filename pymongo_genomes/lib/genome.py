@@ -1,8 +1,12 @@
+import os
+
 import pymongo
 
 from logger import getLogger
 log = getLogger(__name__)
 
+class GenomeNotImportedError(Exception):
+    pass
 
 class Genome(object):
     def __init__(self, file_name, owner, mongo_uri=''):
@@ -13,10 +17,15 @@ class Genome(object):
         self.db = self.con.get_default_database()
 
         found = self.db['genome_info'].find_one({'owner': owner, 'file_name': file_name})
-        if found:
-            self.genome = self.db['genomes'][found['file_uuid']]
-            self.file_format = found['file_format']
-            self.count = self.genome.count()
+        if not found:
+            raise GenomeNotImportedError()
+
+        if not found.get('file_uuid'):
+            raise GenomeNotImportedError()
+
+        self.genome = self.db['genomes'][found['file_uuid']]
+        self.file_format = found['file_format']
+        self.count = self.genome.count()
 
     def get_genotype_by_rsid(self, rsid):
         """Get genotypes by rsids.
@@ -48,3 +57,14 @@ class Genome(object):
     #     TODO
     #     """
     #     pass
+
+    def remove(self):
+        """Remove self genome data.
+        """
+
+        # Remove genotype collection in MongoDB.
+        self.db.drop_collection(self.genome)
+
+        # Remove genome_info in MongoDB.
+        self.db['genome_info'].remove({'owner': self.owner, 'file_name': self.file_name})
+        return

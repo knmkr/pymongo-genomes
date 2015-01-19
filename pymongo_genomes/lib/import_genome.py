@@ -21,18 +21,21 @@ def import_genome(file_path, owner, file_format='vcf', mongo_uri=''):
 
     with pymongo.MongoClient(host=mongo_uri) as con:
         db = con.get_default_database()
-
-        # Use UUID
-        file_uuid = uuid().hex
-        genome = db['genomes'][file_uuid]
         genome_info = db['genome_info']
 
         # Drop old collection if exists
         file_name = os.path.basename(file_path)
-        old_genome_info = genome_info.find_one({'owner': owner, 'file_name': file_name})
-        if old_genome_info:
-            db.drop_collection(db['genomes'][old_genome_info['file_uuid']])
-            log.warn('Dropped old collection')
+        my_genome = genome_info.find_one({'owner': owner, 'file_name': file_name})
+
+        if my_genome:
+            old_uuid = my_genome.get('file_uuid')
+            if old_uuid:
+                db.drop_collection(db['genomes'][old_uuid])
+                log.warn('Dropped old collection')
+
+        # Set UUID
+        file_uuid = uuid().hex
+        genome = db['genomes'][file_uuid]
 
         info = {'owner': owner,
                 'file_name': file_name,

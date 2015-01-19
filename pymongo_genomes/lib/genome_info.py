@@ -12,3 +12,6 @@ class GenomeInfo(object):
 
     def get_infos_by_owner(self, owner):
         return list(self.collection.find({'owner': owner}))
+
+    def get_info(self, owner, file_name):
+        return self.collection.find_one({'owner': owner, 'file_name': file_name})

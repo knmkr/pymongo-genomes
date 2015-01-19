@@ -3,7 +3,7 @@
 import os
 import argparse
 from lib.import_genome import import_genome
-from lib.genome import Genome
+from lib.genome import Genome, GenomeNotImportedError
 from lib.genome_info import GenomeInfo
 
 try:
@@ -24,6 +24,15 @@ def main():
 
     genome_info = GenomeInfo(mongo_uri=MONGO_URI)
     print genome_info.get_infos_by_owner('you')
+
+    g.remove()
+    print genome_info.get_infos_by_owner('you')
+
+    try:
+        g = Genome('test.vcf41.vcf', 'you', mongo_uri=MONGO_URI)
+    except GenomeNotImportedError:
+        print 'Caught GenomeNotImportedError'
+
 
 if __name__ == '__main__':
     main()
