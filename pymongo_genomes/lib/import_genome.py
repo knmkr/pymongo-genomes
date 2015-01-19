@@ -55,6 +55,7 @@ def import_genome(file_path, owner, file_format='vcf', mongo_uri=''):
         with open(file_path, 'rb') as fin:
             try:
                 p = {'vcf': VCFParser,
+                     'gvcf': VCFParser,
                      'andme': andmeParser}[info['file_format']](fin)
 
                 for i, data in enumerate(p.parse_lines()):
