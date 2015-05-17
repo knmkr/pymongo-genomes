@@ -5,9 +5,6 @@ import pymongo
 from logger import getLogger
 log = getLogger(__name__)
 
-class GenomeNotImportedError(Exception):
-    pass
-
 class Genome(object):
     def __init__(self, file_name, owner, mongo_uri=''):
         self.file_name = file_name
@@ -18,10 +15,10 @@ class Genome(object):
 
         found = self.db['genome_info'].find_one({'owner': owner, 'file_name': file_name})
         if not found:
-            raise GenomeNotImportedError()
+            raise Exception('Genome not imported')  #
 
         if not found.get('file_uuid'):
-            raise GenomeNotImportedError()
+            raise Exception('Genome not imported')  #
 
         self.genome = self.db['genomes'][found['file_uuid']]
         self.file_format = found['file_format']
